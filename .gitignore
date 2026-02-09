@@ -1,0 +1,42 @@
+# ========== Geral ==========
+.DS_Store
+Thumbs.db
+*.log
+.env
+.env.local
+.env.*.local
+
+# IDE / Editor
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+.cursor/
+
+# ========== Backend (Java / Maven) ==========
+b2fy-backend/target/
+b2fy-backend/.mvn/wrapper/maven-wrapper.jar
+!b2fy-backend/.mvn/wrapper/maven-wrapper.properties
+b2fy-backend/application-local.yml
+b2fy-backend/*.class
+b2fy-backend/.classpath
+b2fy-backend/.project
+b2fy-backend/.settings/
+
+# ========== Frontend (Node / Vite) ==========
+b2fy-frontend/node_modules/
+b2fy-frontend/dist/
+b2fy-frontend/.vite/
+b2fy-frontend/coverage/
+b2fy-frontend/npm-debug.log*
+b2fy-frontend/yarn-debug.log*
+b2fy-frontend/yarn-error.log*
+b2fy-frontend/.env
+b2fy-frontend/.env.local
+b2fy-frontend/.env.*.local
+
+# ========== Opcional (descomente se usar) ==========
+# b2fy-backend/*.jar
+# b2fy-backend/*.war
+# b2fy-frontend/.cache/
