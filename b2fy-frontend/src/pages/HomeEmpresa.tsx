@@ -35,7 +35,7 @@ export function HomeEmpresa() {
   if (error) return <p className="text-[var(--color-error)] font-medium bg-[var(--color-error)]/10 px-4 py-3 rounded-[var(--radius-sm)]">{error}</p>
 
   return (
-    <div>
+    <div className="py-[10px]">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <h1 className="text-2xl font-bold text-[var(--color-primary)]">Dashboard — Minhas licitações</h1>
         <Button onClick={() => navigate('/agendar-licitacao')} className="whitespace-nowrap">

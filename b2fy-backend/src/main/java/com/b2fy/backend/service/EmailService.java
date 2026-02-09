@@ -1,16 +1,10 @@
 package com.b2fy.backend.service;
 
-import com.b2fy.backend.domain.Licitacao;
-import com.b2fy.backend.domain.Proposta;
-import com.b2fy.backend.domain.Usuario;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.time.format.DateTimeFormatter;
 
 @Service
 public class EmailService {
@@ -25,7 +19,8 @@ public class EmailService {
     }
 
     @Async
-    public void enviarNovaLicitacaoParaFornecedores(Usuario fornecedor, Licitacao licitacao) {
+    public void enviarNovaLicitacaoParaFornecedores(String fornecedorEmail, String fornecedorNome, String licitacaoNome,
+                                                     String descricao, String empresaNome, String empresaEndereco, String dataFechamento) {
         String assunto = "Nova licitação para você";
         String corpo = String.format(
             "Olá %s,\n\nUma nova licitação foi publicada na B2FY.\n\n" +
@@ -35,55 +30,56 @@ public class EmailService {
             "Endereço: %s\n" +
             "Data de fechamento: %s\n\n" +
             "Acesse a plataforma para enviar sua proposta.",
-            fornecedor.getNome(),
-            licitacao.getNome(),
-            licitacao.getDescricaoProdutosServicos() != null ? licitacao.getDescricaoProdutosServicos() : "-",
-            licitacao.getEmpresa().getNome(),
-            licitacao.getEmpresa().getEndereco() != null ? licitacao.getEmpresa().getEndereco() : "-",
-            licitacao.getDataFechamento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+            fornecedorNome,
+            licitacaoNome,
+            descricao != null ? descricao : "-",
+            empresaNome,
+            empresaEndereco != null ? empresaEndereco : "-",
+            dataFechamento
         );
-        enviar(fornecedor.getEmail(), assunto, corpo);
+        enviar(fornecedorEmail, assunto, corpo);
     }
 
     @Async
-    public void enviarRespostaFornecedorParaEmpresa(Usuario empresa, Usuario fornecedor, Licitacao licitacao, String descricao, BigDecimal valorComTaxa) {
-        String assunto = "Resposta do fornecedor na licitação " + licitacao.getNome();
+    public void enviarRespostaFornecedorParaEmpresa(String empresaEmail, String empresaNome, String fornecedorNome,
+                                                     String licitacaoNome, String descricao, String valorComTaxaStr) {
+        String assunto = "Resposta do fornecedor na licitação " + licitacaoNome;
         String corpo = String.format(
             "Olá %s,\n\nO fornecedor %s enviou uma proposta para a licitação %s.\n\n" +
             "Descrição: %s\n" +
             "Valor (com taxa 10%%): R$ %s\n\n" +
             "Acesse a plataforma para ver todos os detalhes.",
-            empresa.getNome(),
-            fornecedor.getNome(),
-            licitacao.getNome(),
+            empresaNome,
+            fornecedorNome,
+            licitacaoNome,
             descricao != null ? descricao : "-",
-            valorComTaxa != null ? valorComTaxa.setScale(2, java.math.RoundingMode.HALF_UP).toString() : "-"
+            valorComTaxaStr != null ? valorComTaxaStr : "-"
         );
-        enviar(empresa.getEmail(), assunto, corpo);
+        enviar(empresaEmail, assunto, corpo);
     }
 
     @Async
-    public void enviarSelecionadoSegundaFase(Usuario fornecedor, Licitacao licitacao) {
+    public void enviarSelecionadoSegundaFase(String fornecedorEmail, String fornecedorNome, String licitacaoNome) {
         String assunto = "Você foi selecionado para a segunda fase";
         String corpo = String.format(
             "Olá %s,\n\nParabéns! Você foi selecionado para a segunda fase da licitação %s.\n\n" +
             "Acesse a plataforma para enviar sua nova proposta e orçamento.",
-            fornecedor.getNome(),
-            licitacao.getNome()
+            fornecedorNome,
+            licitacaoNome
         );
-        enviar(fornecedor.getEmail(), assunto, corpo);
+        enviar(fornecedorEmail, assunto, corpo);
     }
 
     @Async
-    public void enviarGanhadorLicitacao(Usuario fornecedor, Licitacao licitacao) {
-        String assunto = "Você foi o ganhador da licitação " + licitacao.getNome();
+    public void enviarGanhadorLicitacao(String fornecedorEmail, String fornecedorNome, String licitacaoNome) {
+        String assunto = "Você foi o ganhador da licitação " + licitacaoNome;
         String corpo = String.format(
             "Olá %s,\n\nParabéns! Você foi escolhido como ganhador da licitação %s.\n\n" +
             "Entre em contato com a empresa para os próximos passos.",
-            fornecedor.getNome(),
-            licitacao.getNome()
+            fornecedorNome,
+            licitacaoNome
         );
-        enviar(fornecedor.getEmail(), assunto, corpo);
+        enviar(fornecedorEmail, assunto, corpo);
     }
 
     private void enviar(String to, String subject, String text) {

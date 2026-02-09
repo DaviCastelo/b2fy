@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +28,7 @@ public class LicitacaoService {
     private final PropostaRepository propostaRepository;
     private final NichoRepository nichoRepository;
     private final EmailService emailService;
+    private final NotificacaoService notificacaoService;
 
     @Value("${b2fy.licitacao.dias-minimos-fechamento:3}")
     private int diasMinimosFechamento;
@@ -36,13 +38,15 @@ public class LicitacaoService {
         UsuarioRepository usuarioRepository,
         PropostaRepository propostaRepository,
         NichoRepository nichoRepository,
-        EmailService emailService
+        EmailService emailService,
+        NotificacaoService notificacaoService
     ) {
         this.licitacaoRepository = licitacaoRepository;
         this.usuarioRepository = usuarioRepository;
         this.propostaRepository = propostaRepository;
         this.nichoRepository = nichoRepository;
         this.emailService = emailService;
+        this.notificacaoService = notificacaoService;
     }
 
     @Transactional
@@ -70,11 +74,22 @@ public class LicitacaoService {
         licitacao.setFase(FaseLicitacao.ABERTA);
         licitacao.setNichos(nichos);
         licitacao = licitacaoRepository.save(licitacao);
+        String licitacaoNome = licitacao.getNome();
+        String empresaNome = licitacao.getEmpresa().getNome();
+        String empresaEndereco = licitacao.getEmpresa().getEndereco();
+        String dataFechamentoStr = licitacao.getDataFechamento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        String descricao = licitacao.getDescricaoProdutosServicos();
+        String mensagemAberta = "Licitação foi aberta pela empresa " + empresaNome + ", dê uma olhadinha!";
         List<String> nomesNicho = nichos.stream().map(Nicho::getNome).toList();
         List<Usuario> fornecedores = usuarioRepository.findFornecedoresByNichoNomes(TipoUsuario.FORNECEDOR, nomesNicho);
         for (Usuario fornecedor : fornecedores) {
             if (!fornecedor.getId().equals(empresaId)) {
-                emailService.enviarNovaLicitacaoParaFornecedores(fornecedor, licitacao);
+                emailService.enviarNovaLicitacaoParaFornecedores(
+                    fornecedor.getEmail(), fornecedor.getNome(), licitacaoNome,
+                    descricao != null ? descricao : "-", empresaNome,
+                    empresaEndereco != null ? empresaEndereco : "-", dataFechamentoStr
+                );
+                notificacaoService.criarLicitacaoAberta(fornecedor, licitacao, mensagemAberta);
             }
         }
         return toResponse(licitacao);
@@ -142,7 +157,13 @@ public class LicitacaoService {
         licitacaoRepository.save(licitacao);
         proposta.setStatus(StatusProposta.GANHADORA);
         propostaRepository.save(proposta);
-        emailService.enviarGanhadorLicitacao(proposta.getFornecedor(), licitacao);
+        String licitacaoNome = licitacao.getNome();
+        String empresaNome = licitacao.getEmpresa().getNome();
+        String fornecedorEmail = proposta.getFornecedor().getEmail();
+        String fornecedorNome = proposta.getFornecedor().getNome();
+        String mensagemGanhador = "Parabéns! Você foi o ganhador da licitação \"" + licitacaoNome + "\" da empresa " + empresaNome + ".";
+        emailService.enviarGanhadorLicitacao(fornecedorEmail, fornecedorNome, licitacaoNome);
+        notificacaoService.criarGanhador(proposta.getFornecedor(), licitacao, mensagemGanhador);
     }
 
     @Transactional
@@ -154,12 +175,17 @@ public class LicitacaoService {
         if (licitacao.getFase() != FaseLicitacao.ABERTA) {
             throw new BusinessException("Só é possível ir para a segunda fase quando a licitação está aberta.");
         }
+        String licitacaoNome = licitacao.getNome();
+        String mensagem2Fase = "Você foi selecionado para a segunda fase da licitação \"" + licitacaoNome + "\". Parabéns!";
         for (Long propostaId : propostaIds) {
             Proposta p = propostaRepository.findById(propostaId).orElseThrow(() -> new BusinessException("Proposta não encontrada."));
             if (!p.getLicitacao().getId().equals(licitacaoId) || p.getFase() != FaseProposta.FASE_1) continue;
             p.setStatus(StatusProposta.SELECIONADA_2FASE);
             propostaRepository.save(p);
-            emailService.enviarSelecionadoSegundaFase(p.getFornecedor(), licitacao);
+            String fornecedorEmail = p.getFornecedor().getEmail();
+            String fornecedorNome = p.getFornecedor().getNome();
+            emailService.enviarSelecionadoSegundaFase(fornecedorEmail, fornecedorNome, licitacaoNome);
+            notificacaoService.criarSelecionado2Fase(p.getFornecedor(), licitacao, mensagem2Fase);
         }
         licitacao.setFase(FaseLicitacao.SEGUNDA_FASE);
         licitacaoRepository.save(licitacao);

@@ -35,7 +35,7 @@ export function HomeFornecedor() {
   if (error) return <p className="text-[var(--color-error)] font-medium bg-[var(--color-error)]/10 px-4 py-3 rounded-[var(--radius-sm)]">{error}</p>
 
   return (
-    <div>
+    <div className="py-[10px]">
       <h1 className="text-2xl font-bold text-[var(--color-primary)] mb-8">Licitações disponíveis para você</h1>
       <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         {licitacoes.length === 0 ? (

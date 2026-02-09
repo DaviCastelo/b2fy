@@ -100,3 +100,15 @@ export interface NovaPropostaRequest {
   descricaoProdutosServicos?: string
   valorOrcamento: number
 }
+
+export type TipoNotificacao = 'LICITACAO_ABERTA' | 'SELECIONADO_2FASE' | 'GANHADOR'
+
+export interface NotificacaoResponse {
+  id: number
+  licitacaoId: number
+  licitacaoNome: string
+  tipo: TipoNotificacao
+  mensagem: string
+  lida: boolean
+  createdAt: string
+}

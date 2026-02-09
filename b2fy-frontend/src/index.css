@@ -22,6 +22,7 @@
   --font-size-sm: 14px;
   --font-size-lg: 18px;
   --sidebar-width: 260px;
+  --sidebar-effective-width: 260px;
   --header-height: 64px;
   --radius: 12px;
   --radius-sm: 8px;

@@ -80,12 +80,18 @@ public class PropostaService {
         proposta.setValorComTaxa(valorComTaxa);
         proposta.setStatus(StatusProposta.ENVIADA);
         proposta = propostaRepository.save(proposta);
+        String empresaEmail = licitacao.getEmpresa().getEmail();
+        String empresaNome = licitacao.getEmpresa().getNome();
+        String fornecedorNome = fornecedor.getNome();
+        String licitacaoNome = licitacao.getNome();
+        String valorComTaxaStr = valorComTaxa.setScale(2, RoundingMode.HALF_UP).toString();
         emailService.enviarRespostaFornecedorParaEmpresa(
-            licitacao.getEmpresa(),
-            fornecedor,
-            licitacao,
+            empresaEmail,
+            empresaNome,
+            fornecedorNome,
+            licitacaoNome,
             proposta.getDescricaoProdutosServicos(),
-            valorComTaxa
+            valorComTaxaStr
         );
         return toResponse(proposta);
     }

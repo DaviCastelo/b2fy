@@ -7,11 +7,19 @@ const navItems = [
   { to: '/conversas', label: 'Conversas' },
 ]
 
-export function Sidebar() {
+interface SidebarProps {
+  isOpen: boolean
+  onClose: () => void
+}
+
+export function Sidebar({ isOpen, onClose }: Readonly<SidebarProps>) {
   return (
     <aside
-      className="fixed left-0 top-0 z-40 h-screen w-[var(--sidebar-width)] border-r-2 border-[var(--color-border)] bg-[var(--color-surface)] flex flex-col shadow-[var(--shadow)]"
+      className={`fixed left-0 top-0 z-40 h-screen w-[var(--sidebar-width)] border-r-2 border-[var(--color-border)] bg-[var(--color-surface)] flex flex-col shadow-[var(--shadow)] transition-transform duration-300 ease-in-out ${
+        isOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}
       aria-label="Menu principal"
+      aria-hidden={!isOpen}
     >
       <div className="p-5 border-b-2 border-[var(--color-border)] bg-[var(--color-surface)]">
         <NavLink to="/" className="flex items-center gap-3 no-underline group">
@@ -43,6 +51,7 @@ export function Sidebar() {
             <li key={to}>
               <NavLink
                 to={to}
+                onClick={onClose}
                 className={({ isActive }) =>
                   `block px-4 py-3 rounded-[var(--radius-sm)] text-[var(--color-text)] no-underline font-medium transition-all ${
                     isActive
