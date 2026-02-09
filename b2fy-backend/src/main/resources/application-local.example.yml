@@ -1,0 +1,7 @@
+# Copie este arquivo para application-local.yml e preencha com suas credenciais do PostgreSQL.
+# O arquivo application-local.yml não deve ser commitado (já está no .gitignore).
+
+spring:
+  datasource:
+    username: postgres
+    password: SUA_SENHA_POSTGRES_AQUI

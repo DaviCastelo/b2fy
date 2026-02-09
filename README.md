@@ -90,4 +90,3 @@ Se o arquivo não existir, o sistema exibe o texto "B2FY" como fallback. O proxy
 ## Licença
 
 Uso interno / educacional.
-# b2fy

@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: b2fy-backend
+  datasource:
+    url: jdbc:postgresql://localhost:5432/b2fy
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        format_sql: true
+        default_schema: public
+    open-in-view: false
+  mail:
+    host: ${MAIL_HOST:smtp.example.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /api
+
+b2fy:
+  cors:
+    allowed-origins: http://localhost:5173,http://localhost:3000
+  jwt:
+    secret: ${JWT_SECRET:b2fyJwtSecretKeyMuitoLongoParaSegurancaMinima123456}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+  taxa-plataforma: 0.10
+  licitacao:
+    dias-minimos-fechamento: 3
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html

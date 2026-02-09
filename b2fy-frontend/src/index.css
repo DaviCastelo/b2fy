@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* B2FY - Paleta da logo: teal escuro, laranja, teal claro */
+:root {
+  --color-bg: #f0f7f6;
+  --color-surface: #ffffff;
+  --color-text: #333333;
+  --color-text-muted: #5a6c6a;
+  --color-primary: #2A676E;
+  --color-primary-hover: #235a60;
+  --color-primary-light: #81BFB4;
+  --color-primary-pale: #e8f4f2;
+  --color-accent: #E78330;
+  --color-accent-hover: #d67322;
+  --color-accent-light: #fef3eb;
+  --color-border: #c5ddd9;
+  --color-success: #16a34a;
+  --color-error: #dc2626;
+  --font-size-base: 16px;
+  --font-size-sm: 14px;
+  --font-size-lg: 18px;
+  --sidebar-width: 260px;
+  --header-height: 64px;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow-sm: 0 1px 3px rgba(42, 103, 110, 0.08);
+  --shadow: 0 4px 12px rgba(42, 103, 110, 0.12);
+  --shadow-lg: 0 8px 24px rgba(42, 103, 110, 0.15);
+}
+
+[data-theme="dark"] {
+  --color-bg: #1a2524;
+  --color-surface: #243331;
+  --color-text: #e8f4f2;
+  --color-text-muted: #81BFB4;
+  --color-primary: #81BFB4;
+  --color-primary-hover: #9dd0c7;
+  --color-primary-light: #2A676E;
+  --color-primary-pale: #1e3d3b;
+  --color-accent: #E78330;
+  --color-accent-hover: #f09444;
+  --color-accent-light: #3d2a1a;
+  --color-border: #2A676E;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
+  --shadow: 0 4px 12px rgba(0,0,0,0.25);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.3);
+}
+
+html {
+  font-size: var(--font-size-base);
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* Páginas de auth (Login/Registro) */
+.auth-card input[type="text"],
+.auth-card input[type="password"],
+.auth-card input[type="email"] {
+  border-radius: 8px;
+  border-color: #e5e5e5;
+}
+.auth-card input:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(42, 103, 110, 0.2);
+}
+.auth-card__footer a {
+  text-decoration: none;
+}
+.auth-card__footer a:hover {
+  text-decoration: underline;
+}
