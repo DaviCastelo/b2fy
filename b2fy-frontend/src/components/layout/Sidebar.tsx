@@ -1,9 +1,15 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 
-const navItems = [
+const navItemsEmpresa = [
   { to: '/', label: 'Home' },
   { to: '/agendar-licitacao', label: 'Agendar licitação' },
+  { to: '/conversas', label: 'Conversas' },
+]
+
+const navItemsFornecedor = [
+  { to: '/', label: 'Home' },
   { to: '/conversas', label: 'Conversas' },
 ]
 
@@ -13,6 +19,9 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isOpen, onClose }: Readonly<SidebarProps>) {
+  const { isEmpresa } = useAuth()
+  const navItems = isEmpresa ? navItemsEmpresa : navItemsFornecedor
+
   return (
     <aside
       className={`fixed left-0 top-0 z-40 h-screen w-[var(--sidebar-width)] border-r-2 border-[var(--color-border)] bg-[var(--color-surface)] flex flex-col shadow-[var(--shadow)] transition-transform duration-300 ease-in-out ${

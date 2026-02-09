@@ -1,6 +1,7 @@
 package com.b2fy.backend.service;
 
 import com.b2fy.backend.domain.*;
+import com.b2fy.backend.dto.request.AtualizarLicitacaoRequest;
 import com.b2fy.backend.dto.request.NovaLicitacaoRequest;
 import com.b2fy.backend.dto.response.LicitacaoResponse;
 import com.b2fy.backend.dto.response.PropostaResponse;
@@ -95,6 +96,33 @@ public class LicitacaoService {
         return toResponse(licitacao);
     }
 
+    @Transactional
+    public LicitacaoResponse atualizar(Long id, AtualizarLicitacaoRequest request) {
+        Licitacao licitacao = licitacaoRepository.findById(id).orElseThrow(() -> new BusinessException("Licitação não encontrada."));
+        if (!licitacao.getEmpresa().getId().equals(UsuarioService.getCurrentUserId())) {
+            throw new BusinessException("Apenas a empresa dona da licitação pode editá-la.");
+        }
+        if (licitacao.getFase() != FaseLicitacao.ABERTA) {
+            throw new BusinessException("Só é possível editar licitação na fase aberta.");
+        }
+        LocalDate minData = LocalDate.now().plusDays(diasMinimosFechamento);
+        if (request.dataFechamento().isBefore(minData)) {
+            throw new BusinessException("Data de fechamento deve ser no mínimo " + diasMinimosFechamento + " dias a partir de hoje.");
+        }
+        Set<Nicho> nichos = new java.util.HashSet<>();
+        for (String nomeNicho : request.nichos()) {
+            Nicho n = nichoRepository.findByNomeIgnoreCase(nomeNicho.trim())
+                .orElseThrow(() -> new BusinessException("Nicho não encontrado: " + nomeNicho));
+            nichos.add(n);
+        }
+        licitacao.setNome(request.nome());
+        licitacao.setDescricaoProdutosServicos(request.descricaoProdutosServicos());
+        licitacao.setDataFechamento(request.dataFechamento());
+        licitacao.setNichos(nichos);
+        licitacao = licitacaoRepository.save(licitacao);
+        return toResponse(licitacao);
+    }
+
     @Transactional(readOnly = true)
     public List<LicitacaoResponse> listarPorEmpresa() {
         Long empresaId = UsuarioService.getCurrentUserId();
@@ -131,7 +159,7 @@ public class LicitacaoService {
             throw new BusinessException("Apenas a empresa dona da licitação pode ver as propostas.");
         }
         FaseProposta fase = licitacao.getFase() == FaseLicitacao.SEGUNDA_FASE ? FaseProposta.FASE_2 : FaseProposta.FASE_1;
-        List<Proposta> propostas = propostaRepository.findByLicitacaoIdAndFase(licitacaoId, fase);
+        List<Proposta> propostas = propostaRepository.findByLicitacaoIdAndFaseWithFornecedor(licitacaoId, fase);
         return propostas.stream().map(this::toPropostaResponse).collect(Collectors.toList());
     }
 
@@ -154,6 +182,7 @@ public class LicitacaoService {
         }
         licitacao.setFase(FaseLicitacao.ENCERRADA);
         licitacao.setGanhador(proposta.getFornecedor());
+        licitacao.setEncerradaEm(java.time.Instant.now());
         licitacaoRepository.save(licitacao);
         proposta.setStatus(StatusProposta.GANHADORA);
         propostaRepository.save(proposta);
@@ -212,11 +241,15 @@ public class LicitacaoService {
     }
 
     private PropostaResponse toPropostaResponse(Proposta p) {
+        var f = p.getFornecedor();
         return new PropostaResponse(
             p.getId(),
-            p.getFornecedor().getId(),
-            p.getFornecedor().getNome(),
-            p.getFornecedor().getEmail(),
+            f.getId(),
+            f.getNome(),
+            f.getEmail(),
+            f.getCpfOuCnpj(),
+            f.getEndereco(),
+            f.getTelefone(),
             p.getFase(),
             p.getDescricaoProdutosServicos(),
             p.getValorOrcamento(),

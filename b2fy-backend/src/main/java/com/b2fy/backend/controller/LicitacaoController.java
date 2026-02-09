@@ -1,5 +1,6 @@
 package com.b2fy.backend.controller;
 
+import com.b2fy.backend.dto.request.AtualizarLicitacaoRequest;
 import com.b2fy.backend.dto.request.NovaLicitacaoRequest;
 import com.b2fy.backend.dto.response.LicitacaoResponse;
 import com.b2fy.backend.dto.response.PropostaResponse;
@@ -54,6 +55,13 @@ public class LicitacaoController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<LicitacaoResponse> buscar(@PathVariable Long id) {
         return ResponseEntity.ok(licitacaoService.buscarPorId(id));
+    }
+
+    @Operation(summary = "Editar licitação (empresa dona, apenas fase aberta)")
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('EMPRESA')")
+    public ResponseEntity<LicitacaoResponse> atualizar(@PathVariable Long id, @Valid @RequestBody AtualizarLicitacaoRequest request) {
+        return ResponseEntity.ok(licitacaoService.atualizar(id, request));
     }
 
     @Operation(summary = "Listar propostas da fase atual da licitação")

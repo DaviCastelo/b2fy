@@ -50,6 +50,10 @@ public class Licitacao {
     @Column(nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
+    /** Data/hora em que a licitação foi encerrada (ganhador definido). */
+    @Column(name = "encerrada_em")
+    private Instant encerradaEm;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "licitacao_nicho",
@@ -131,6 +135,14 @@ public class Licitacao {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Instant getEncerradaEm() {
+        return encerradaEm;
+    }
+
+    public void setEncerradaEm(Instant encerradaEm) {
+        this.encerradaEm = encerradaEm;
     }
 
     public List<Proposta> getPropostas() {

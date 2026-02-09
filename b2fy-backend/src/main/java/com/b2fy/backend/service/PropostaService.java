@@ -107,11 +107,15 @@ public class PropostaService {
     }
 
     private PropostaResponse toResponse(Proposta p) {
+        var f = p.getFornecedor();
         return new PropostaResponse(
             p.getId(),
-            p.getFornecedor().getId(),
-            p.getFornecedor().getNome(),
-            p.getFornecedor().getEmail(),
+            f.getId(),
+            f.getNome(),
+            f.getEmail(),
+            f.getCpfOuCnpj(),
+            f.getEndereco(),
+            f.getTelefone(),
             p.getFase(),
             p.getDescricaoProdutosServicos(),
             p.getValorOrcamento(),

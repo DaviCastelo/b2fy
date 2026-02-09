@@ -76,6 +76,9 @@ export interface PropostaResponse {
   fornecedorId: number
   fornecedorNome: string
   fornecedorEmail: string
+  fornecedorCpfOuCnpj: string | null
+  fornecedorEndereco: string | null
+  fornecedorTelefone: string | null
   fase: FaseProposta
   descricaoProdutosServicos: string | null
   valorOrcamento: number
@@ -111,4 +114,14 @@ export interface NotificacaoResponse {
   mensagem: string
   lida: boolean
   createdAt: string
+}
+
+export interface DashboardEmpresaResponse {
+  abertas: number
+  segundaFase: number
+  encerradas: number
+  atrasadas: number
+  porNicho: { nichoNome: string; quantidade: number }[]
+  gastoMesAtual: number
+  historicoGastos: { ano: number; mes: number; valor: number }[]
 }
